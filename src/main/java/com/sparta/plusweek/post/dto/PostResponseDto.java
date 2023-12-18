@@ -1,6 +1,7 @@
 package com.sparta.plusweek.post.dto;
 
 import com.sparta.plusweek.post.entity.Post;
+import com.sparta.plusweek.user.dto.CommonResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostResponseDto {
+public class PostResponseDto extends CommonResponseDto {
     private Long id;
     private String username;
     private String title;
