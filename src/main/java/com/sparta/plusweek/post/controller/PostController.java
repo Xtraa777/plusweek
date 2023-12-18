@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/posts")
@@ -18,6 +20,7 @@ public class PostController {
 
     private final PostService postService;
 
+    //게시글 생성
     @PostMapping
     public ResponseEntity<PostResponseDto> createPosts(
             @RequestBody PostRequestDto postRequestDto,
@@ -28,6 +31,7 @@ public class PostController {
         return ResponseEntity.status(201).body(postResponseDto);
     }
 
+    //단건 게시글 조회
     @GetMapping("/{postId}")
     public ResponseEntity<CommonResponseDto> getPosts(@PathVariable Long postId) {
         try {
@@ -39,4 +43,10 @@ public class PostController {
         }
     }
 
+    //전체 게시글 조회
+    @GetMapping
+    public ResponseEntity<List<PostResponseDto>> getPosts() {
+        List<PostResponseDto> responseDtoList = postService.getPosts();
+        return ResponseEntity.ok(responseDtoList);
+    }
 }
