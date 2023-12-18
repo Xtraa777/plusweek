@@ -38,4 +38,16 @@ public class UserService {
         User user = new User(username, encodedPassword);
         userRepository.save(user);
     }
+
+    public void login(UserRequestDto userRequestDto) {
+        String username = userRequestDto.getUsername();
+        String password = userRequestDto.getPassword();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("닉네임 또는 패스워드를 확인해주세요."));
+
+        if(!passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("닉네임 또는 패스워드를 확인해주세요.");
+        }
+    }
 }
