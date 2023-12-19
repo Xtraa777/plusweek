@@ -1,5 +1,7 @@
 package com.sparta.plusweek.post.service;
 
+import com.sparta.plusweek.comment.entity.Comment;
+import com.sparta.plusweek.comment.repository.CommentRepository;
 import com.sparta.plusweek.post.dto.PostRequestDto;
 import com.sparta.plusweek.post.dto.PostResponseDto;
 import com.sparta.plusweek.post.entity.Post;
@@ -19,6 +21,7 @@ import java.util.concurrent.RejectedExecutionException;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     //게시글 생성
     public PostResponseDto createPosts(PostRequestDto postRequestDto, User user) {
@@ -31,7 +34,8 @@ public class PostService {
     //단건 게시글 조회
     public PostResponseDto getPostDto(Long postId) {
         Post post = getPost(postId);
-        return new PostResponseDto(post);
+        List<Comment> commentList = commentRepository.findAllByPostId(postId);
+        return new PostResponseDto(post, commentList);
     }
 
     //전체 게시글 조회
@@ -64,7 +68,7 @@ public class PostService {
     }
 
     //게시글 예외처리
-    private Post getPost(Long postId) {
+    public Post getPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
     }

@@ -1,12 +1,15 @@
 package com.sparta.plusweek.post.entity;
 
 import com.sparta.plusweek.Timestamped;
+import com.sparta.plusweek.comment.entity.Comment;
 import com.sparta.plusweek.post.dto.PostRequestDto;
 import com.sparta.plusweek.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,9 +35,12 @@ public class Post extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Post(PostRequestDto postResponseDto, String username) {
-        this.title = postResponseDto.getTitle();
-        this.content = postResponseDto.getContent();
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
+
+    public Post(PostRequestDto postRequestDto, String username) {
+        this.title = postRequestDto.getTitle();
+        this.content = postRequestDto.getContent();
         this.username = username;
     }
 }
