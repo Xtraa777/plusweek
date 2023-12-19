@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.RejectedExecutionException;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<CommonResponseDto> getPosts(@PathVariable Long postId) {
         try {
-            PostResponseDto postResponseDto = postService.getPost(postId);
+            PostResponseDto postResponseDto = postService.getPostDto(postId);
             return ResponseEntity.ok().body(postResponseDto);
         } catch (IllegalArgumentException exception) {
             return  ResponseEntity.badRequest()
@@ -48,5 +49,34 @@ public class PostController {
     public ResponseEntity<List<PostResponseDto>> getPosts() {
         List<PostResponseDto> responseDtoList = postService.getPosts();
         return ResponseEntity.ok(responseDtoList);
+    }
+
+    //게시글 수정
+    @PatchMapping("/{postId}")
+    public ResponseEntity<CommonResponseDto> updatePost(
+            @PathVariable Long postId,
+            @RequestBody PostRequestDto postRequestDto,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        try {
+            PostResponseDto responseDto = postService.updatePost(postId, postRequestDto, userDetails.getUser());
+            return ResponseEntity.ok(responseDto);
+        }catch (RejectedExecutionException | IllegalArgumentException exception){
+            return ResponseEntity.badRequest().body(new CommonResponseDto(exception.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
+    }
+
+    //게시글 삭제
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<CommonResponseDto> deletePost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        try {
+            postService.deletePost(postId, userDetails.getUser());
+            return ResponseEntity.status(HttpStatus.OK.value()).body(new CommonResponseDto("삭제 성공", HttpStatus.OK.value()));
+        } catch (RejectedExecutionException | IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(new CommonResponseDto(ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
+        }
     }
 }
